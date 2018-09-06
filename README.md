@@ -3,7 +3,7 @@
 # subdns
 
 
-[![asciicast](https://asciinema.org/a/199913.png)](https://asciinema.org/a/199913)
+[![asciicast](https://github.com/cuijianxiong/subdns/blob/master/2.png)](https://asciinema.org/a/199913)
 
 采用 asyncio+aiodns协程进行子域名爆破
 因为协程生成协程池会消耗大量系统资源，所以会对字典进行切割
