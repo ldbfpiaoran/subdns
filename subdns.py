@@ -213,7 +213,7 @@ def main():
     else:
         subname_dict = os.getcwd() + '/dict/' + subname_dict
         save_name = os.getcwd() + '/output/' + domain + '.txt'
-        save_name = os.getcwd() + '/dict/' + next_n
+        next_subname = os.getcwd() + '/dict/' + next_n
     log.info("check  dict is " + subname_dict)
 
     subname_list = []  #  scan domain list
@@ -252,7 +252,7 @@ def main():
         domain_result=domain_result,
         next_scan=next_scan)
     s.get_analysis()
-    log.error(allip_dict)
+    #log.error(allip_dict)
     s.run()
 
     log.warning("Total  scan " + str(len(domain_result)) + " subname")
