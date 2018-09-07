@@ -1,11 +1,12 @@
-import logging
-import colorlog
-import argparse
+# -*- coding: utf-8 -*-  
 import sys
 import asyncio
 import aiodns
 import os
 import uuid
+import logging
+import colorlog
+import argparse
 '''
 set log this code is Useless
 log.debug  is white ,info is green ,warn is yellow ,error is red ,critical  red!
@@ -43,7 +44,7 @@ class Subdns():
         self.loop = asyncio.get_event_loop()
         self.subdomain_list = subdomain_list
         self.resolver = aiodns.DNSResolver(timeout=2, loop=self.loop)
-        if dns_servers is None:   #'192.168.102.81','192.168.102.82'  
+        if dns_servers is None:   # '192.168.102.81','192.168.102.82'  
             self.resolver.nameservers = [
                 '223.5.5.5', '223.6.6.6', '114.114.114.114'
             ]
@@ -54,11 +55,11 @@ class Subdns():
         self.scan_total = 0
         self.find_total = 0
         self.semaphore = asyncio.Semaphore(
-            4000)  #   协程并发最大   大佬建议是10000  我觉得2000-5000差不多 也不怎么慢
+            4000)  # 协程并发最大   大佬建议是10000  我觉得2000-5000差不多 也不怎么慢
         self.timeout_domain = timeout_domain
         self.next_scan = next_scan
-        self.create_limit = create_limit  #  扫描队列分组为了减少内存开销  异步的task内存占用是在是....可调
-        self.limit_timeout = 6  #  超时重试次数   默认重试6次
+        self.create_limit = create_limit  # 扫描队列分组为了减少内存开销  异步的task内存占用是在是....可调
+        self.limit_timeout = 6  # 超时重试次数   默认重试6次
 
     async def scan(self, sub_domain, sem):
         async with sem:
@@ -100,8 +101,8 @@ class Subdns():
         log.info('check black list')
         for _ in range(10):
             try:
-                res =  self.resolver.query(str(uuid.uuid4())+'.'+self.domain, "A")
-                res =  self.loop.run_until_complete(res)
+                res = self.resolver.query(str(uuid.uuid4())+'.'+self.domain, "A")
+                res = self.loop.run_until_complete(res)
                 for ip in res:
                     self.allip_dict.add(ip.host)
             except aiodns.error.DNSError as e:
@@ -133,7 +134,7 @@ class Subdns():
                         sub_domain=sub.replace("." + self.domain, '') + "." +
                         self.domain,
                         sem=self.semaphore)) for sub in namelist
-            ]  #  内存占用太大
+            ]  # 内存占用太大
             self.loop.run_until_complete(asyncio.wait(tasks))
 
         while self.timeout_domain != [] and len(
@@ -200,30 +201,30 @@ def main():
         default='mini_names.txt')
     args = parser.parse_args()
 
-    if args.domain == None:
+    if args.domain is None:
         log.error("Please input domain  such as python subdns.py -u baidu.com")
         sys.exit()
-    domain = args.domain  #   scan  domain
-    subname_dict = args.dict  #  dict  name
+    domain = args.domain  # scan  domain
+    subname_dict = args.dict  # dict  name
     next_n = args.next
-    if os.name == 'nt':  #subname_dict   字典物理地址
+    if os.name == 'nt':  # subname_dict   字典物理地址
         subname_dict = os.getcwd() + '\\dict\\' + subname_dict
         save_name = os.getcwd() + '\\output\\' + domain + '.txt'
         next_subname = os.getcwd() + '\\dict\\' + next_n
     else:
         subname_dict = os.getcwd() + '/dict/' + subname_dict
         save_name = os.getcwd() + '/output/' + domain + '.txt'
-        save_name = os.getcwd() + '/dict/' + next_n
+        next_subname = os.getcwd() + '/dict/' + next_n
     log.info("check  dict is " + subname_dict)
 
-    subname_list = []  #  scan domain list
+    subname_list = []  # scan domain list
     allip_dict = set()  # black list
-    domain_result = []  #  subname list
-    next_scan = []  #  deep scan list
-    timeout_domain = []  #  timeout retry list
-    next_subname_list = []  #  deep scan list
+    domain_result = []  # subname list
+    next_scan = []  # deep scan list
+    timeout_domain = []  # timeout retry list
+    next_subname_list = []  # deep scan list
 
-    create_limit = 300000  #300000#  扫描队列分组为了减少内存开销  异步的task内存占用是在是....可调
+    create_limit = 300000  # 300000#  扫描队列分组为了减少内存开销  异步的task内存占用是在是....可调
     count = 0
     count_list = []
     domain_count = 0
@@ -252,7 +253,7 @@ def main():
         domain_result=domain_result,
         next_scan=next_scan)
     s.get_analysis()
-    log.error(allip_dict)
+    # log.error(allip_dict)
     s.run()
 
     log.warning("Total  scan " + str(len(domain_result)) + " subname")
@@ -262,23 +263,7 @@ def main():
             sa.write(z + '\n')
 
     log.warning("The result is save in " + save_name)
-    '''
-    Load deep scan dictionary
-    
-    '''
 
-    with open(next_subname) as x:
-        for i in x.readlines():
-            domain_count += 1
-            count += 1
-            count_list.append(i.replace('\n', ''))
-            if count == create_limit:
-                next_subname_list.append(count_list)
-                count_list = []
-                count = 0
-        if count_list != []:
-            next_subname_list.append(count_list)
-            count_list = []
     '''
     
     deep scan sudname
@@ -286,6 +271,24 @@ def main():
 
     '''
     if args.deep:
+            '''
+    Load deep scan dictionary
+    
+    '''
+
+        with open(next_subname) as x:
+            for i in x.readlines():
+                domain_count += 1
+                count += 1
+                count_list.append(i.replace('\n', ''))
+                if count == create_limit:
+                    next_subname_list.append(count_list)
+                    count_list = []
+                    count = 0
+            if count_list != []:
+                next_subname_list.append(count_list)
+                count_list = []
+
         next_scan = list(set(next_scan))
         while next_scan != []:
             for name in next_scan:
