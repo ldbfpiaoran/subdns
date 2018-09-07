@@ -253,7 +253,11 @@ def main():
         domain_result=domain_result,
         next_scan=next_scan)
     s.get_analysis()
+<<<<<<< HEAD
     # log.error(allip_dict)
+=======
+    #log.error(allip_dict)
+>>>>>>> 67fd885bf3a81181478c208ffad62a7e69d05061
     s.run()
 
     log.warning("Total  scan " + str(len(domain_result)) + " subname")
