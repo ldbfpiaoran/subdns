@@ -224,7 +224,7 @@ def main():
     log.info("check  dict is " + subname_dict)
 
     subname_list = []  # scan domain list
-    allip_dict = [] # black list
+    allip_dict = {} # black list
     domain_result = []  # subname list
     next_scan = []  # deep scan list
     timeout_domain = []  # timeout retry list
