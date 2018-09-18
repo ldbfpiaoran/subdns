@@ -44,7 +44,7 @@ class Subdns():
         self.resolver = aiodns.DNSResolver(timeout=2, loop=self.loop)
         if dns_servers is None:
             self.resolver.nameservers = [
-                '223.5.5.5', '223.6.6.6', '114.114.114.114'
+                '1.1.1.1'
             ]
         self.domain = domain
         self.allip_dict = allip_dict
@@ -242,48 +242,48 @@ def main():
     '''
     Load deep scan dictionary
     
-    '''
-
-    with open(next_subname) as x:
-        for i in x.readlines():
-            domain_count += 1
-            count += 1
-            count_list.append(i.replace('\n', ''))
-            if count == create_limit:
-                next_subname_list.append(count_list)
-                count_list = []
-                count = 0
-        if count_list != []:
-            next_subname_list.append(count_list)
-            count_list = []
-    '''
+    
     
     deep scan sudname
 
 
     '''
     if args.deep:
-        next_scan = list(set(next_scan))
-        while next_scan != []:
-            for name in next_scan:
-                timeout_domain = []
-                domain_result = []
-                next_scan.remove(name)
-                s = Subdns(
-                    domain=name,
-                    subdomain_list=next_subname_list,
-                    allip_dict=allip_dict,
-                    create_limit=create_limit,
-                    timeout_domain=timeout_domain,
-                    domain_result=domain_result,
-                    next_scan=next_scan)
-                s.run()
+        with open(next_subname) as x:
+            for i in x.readlines():
+                domain_count += 1
+                count += 1
+                count_list.append(i.replace('\n', ''))
+                if count == create_limit:
+                    next_subname_list.append(count_list)
+                    count_list = []
+                    count = 0
+            if count_list != []:
+                next_subname_list.append(count_list)
+                count_list = []
 
-                with open(save_name, 'a+') as sa:
-                    for z in domain_result:
-                        sa.write(z + '\n')
+            next_scan = list(set(next_scan))
+            while next_scan != []:
+                for name in next_scan:
+                    timeout_domain = []
+                    domain_result = []
+                    next_scan.remove(name)
+                    s = Subdns(
+                        domain=name,
+                        subdomain_list=next_subname_list,
+                        allip_dict=allip_dict,
+                        create_limit=create_limit,
+                        timeout_domain=timeout_domain,
+                        domain_result=domain_result,
+                        next_scan=next_scan)
+                    s.get_analysis()
+                    s.run()
 
-            log.warning("The result is save in" + save_name)
+                    with open(save_name, 'a+') as sa:
+                        for z in domain_result:
+                            sa.write(z + '\n')
+
+                log.warning("The result is save in" + save_name)
 
 
 if __name__ == "__main__":
