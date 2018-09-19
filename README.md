@@ -26,6 +26,7 @@ unix系统需要修改 open files 的值  协程默认并发量4000如果带宽�
 -------
 
 python subdns.py -u example.com -d test.txt 
+python subdns.py -u example.com -d test.txt  --deep 1 -n next.txt
 
 
 泛解析
