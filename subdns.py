@@ -291,24 +291,24 @@ def main():
 
         next_scan = list(set(next_scan))
         while next_scan != []:
-            for name in next_scan:
-                timeout_domain = []
-                domain_result = []
-                next_scan.remove(name)
-                s = Subdns(
-                    domain=name,
-                    subdomain_list=next_subname_list,
-                    allip_dict=allip_dict,
-                    create_limit=create_limit,
-                    timeout_domain=timeout_domain,
-                    domain_result=domain_result,
-                    next_scan=next_scan)
-                s.get_analysis()
-                s.run()
+            name = next_scan[0]
+            timeout_domain = []
+            domain_result = []
+            next_scan.remove(name)
+            s = Subdns(
+                domain=name,
+                subdomain_list=next_subname_list,
+                allip_dict=allip_dict,
+                create_limit=create_limit,
+                timeout_domain=timeout_domain,
+                domain_result=domain_result,
+                next_scan=next_scan)
+            s.get_analysis()
+            s.run()
 
-                with open(save_name, 'a+') as sa:
-                    for z in domain_result:
-                        sa.write(z + '\n')
+            with open(save_name, 'a+') as sa:
+                for z in domain_result:
+                    sa.write(z + '\n')
 
             log.warning("The result is save in" + save_name)
 
