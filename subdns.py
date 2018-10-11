@@ -55,7 +55,7 @@ class Subdns():
         self.scan_total = 0
         self.find_total = 0
         self.semaphore = asyncio.Semaphore(
-            4000)  # 协程并发最大   大佬建议是10000  我觉得2000-5000差不多 也不怎么慢
+            8000)  # 协程并发最大   大佬建议是10000  我觉得2000-5000差不多 也不怎么慢
         self.timeout_domain = timeout_domain
         self.next_scan = next_scan
         self.create_limit = create_limit  # 扫描队列分组为了减少内存开销  异步的task内存占用是在是....可调
@@ -93,8 +93,14 @@ class Subdns():
         if ret == []:
             return False
         for ip in ret:
-            if ip in self.allip_dict:
-                return False
+            if ip in self.allip_dict.keys():
+                if self.allip_dict[ip] < self.ip_con:
+                    self.allip_dict[ip] += 1
+                else:
+                    # log.warning(sub_domain+"   May be a general analysis")
+                    return False
+            else:
+                self.allip_dict[ip] = 1
         return True
 
     def get_analysis(self):
@@ -104,7 +110,7 @@ class Subdns():
                 res = self.resolver.query(str(uuid.uuid4())+'.'+self.domain, "A")
                 res = self.loop.run_until_complete(res)
                 for ip in res:
-                    self.allip_dict.add(ip.host)
+                    self.allip_dict[ip.host] = 5
             except aiodns.error.DNSError as e:
                 err_code, err_msg = e.args[0], e.args[1]
                 # 1:  DNS server returned answer with no data
@@ -218,7 +224,7 @@ def main():
     log.info("check  dict is " + subname_dict)
 
     subname_list = []  # scan domain list
-    allip_dict = set()  # black list
+    allip_dict = {} # black list
     domain_result = []  # subname list
     next_scan = []  # deep scan list
     timeout_domain = []  # timeout retry list
@@ -263,7 +269,7 @@ def main():
             sa.write(z + '\n')
 
     log.warning("The result is save in " + save_name)
-
+    
     '''
     
     deep scan sudname
