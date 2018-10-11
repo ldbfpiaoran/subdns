@@ -38,3 +38,10 @@ python subdns.py -u example.com -d test.txt  --deep 1 -n next.txt
 但这个效果不是很理想  当枚举二级三级域名的时候会出现大量的垃圾记录
 
 dict_subdns是采用 黑名单+ip出现次数做限制的
+
+
+2018/10/11
+------
+万恶的苏宁淘宝   
+大量店铺的域名  
+subdns改用黑名单+ip出现次数了~~  
