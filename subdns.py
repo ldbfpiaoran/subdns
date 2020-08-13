@@ -221,7 +221,7 @@ def main():
     parser.add_argument(
         "-u", "--domain", type=str, help='Designated domain name')
     parser.add_argument("-s", "--deep", type=int, help='Domain depth', default=5)
-    parser.add_argument("-c", "--check_bk", type=bool, help='check  random subdomain', default=True)
+    parser.add_argument("-c", "--check_bk", type=str, help='check  random subdomain', default=True)
     parser.add_argument("-an", "--analysis_domain", type=str, help='analysis cname')
     parser.add_argument("-fd", "--fuzz_data", type=str, help='FUZZ data')
     parser.add_argument(
