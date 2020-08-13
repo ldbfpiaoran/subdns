@@ -42,7 +42,7 @@ class Subscan:
         self.check_analysis = True if paras.get('analysis_domain') else False  # 通过cname 判断泛解析 这个方法极度损耗性能相当于查询两遍dns
         self.analysis_domain = paras['analysis_domain'] if paras.get('analysis_domain') else []
         self.queue = asyncio.Queue()
-        self.check_bk = paras['check_bk'] if paras.get('check_bk') else True
+        self.check_bk = paras['check_bk']
         self.black_list = {}  # 黑名单ip  黑明单键值为10
         self.bk_domain = paras['bk_domain'] if paras.get('bk_domain') else []  # openvpn  world.taobao.com 这样的
         self.bk_limit = 10  # 黑名单次数
@@ -56,7 +56,6 @@ class Subscan:
         self.dictname = "mini_names.txt" #"big_subnames.txt"  # 一级域名大字典
         if paras.get('dictname'):
             self.dictname = paras['dictname']
-        print(self.dictname)
         self.sec_dictname = "test.txt" #"subdict.txt"  # 递归小字典
         self.semaphore = asyncio.Semaphore(5000)  # 协程并发量  2m带宽
         log.info(f'开始扫描子域名 {self.domain}')
@@ -241,7 +240,7 @@ def main():
         log.error("Please input domain  such as python subdns.py -u baidu.com")
         sys.exit()
     params['domain'] = args.domain
-    if args.check_bk == 'false':
+    if args.check_bk:
         params['check_bk'] = False
     else:
         params['check_bk'] = True
