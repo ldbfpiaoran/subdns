@@ -240,7 +240,7 @@ def main():
         log.error("Please input domain  such as python subdns.py -u baidu.com")
         sys.exit()
     params['domain'] = args.domain
-    if args.check_bk:
+    if args.check_bk.lower() == 'false':
         params['check_bk'] = False
     else:
         params['check_bk'] = True
