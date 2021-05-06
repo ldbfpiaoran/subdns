@@ -35,6 +35,8 @@ log.setLevel(logging.INFO)
 
 class Subscan:
     def __init__(self, paras={}):
+        self.is_fuzz = paras['fuzz'] if paras.get('fuzz') else False
+        self.fuzz_data = paras['fd'] if paras.get('fd') else ""
         self.deep = paras['deep'] if paras.get('deep') else 5
         self.test = paras['test'] if paras.get('test') else False
         self.check_analysis = True if paras.get('analysis_domain') else False  # 通过cname 判断泛解析 这个方法极度损耗性能相当于查询两遍dns
@@ -173,7 +175,7 @@ class Subscan:
                         f.write(subname+"\t"+str(ips)+"\n")
                 sub_deep = self.get_deep(subname)
                 sub_text = subname.replace("."+self.domain, "")
-                if sub_deep <= self.deep:   # 域名深度
+                if sub_deep <= self.deep and not self.is_fuzz:   # 域名深度
                     self.deep_domain.append(sub_text)
             except Exception as e:
                 log.error(str(e))
@@ -189,6 +191,8 @@ class Subscan:
             for line in f:
                 domain = line.strip().lower()
                 if not self.check_bk_domain(domain):
+                    if self.is_fuzz:
+                        domain = self.fuzz_data.replace("FUZZ", domain)
                     self.queue.put_nowait(domain)
         brute_tasks = [self.loop.create_task(self.brute_domain()) for _ in range(2000)]
         await self.queue.join()
@@ -226,6 +230,7 @@ def main():
         "-u", "--domain", type=str, help='Designated domain name')
     parser.add_argument("-s", "--deep", type=int, help='Domain depth', default=5)
     parser.add_argument("-c", "--check_bk", type=bool, help='check  random subdomain', default=True)
+    parser.add_argument("-fd", "--fuzz_data", type=str, help='FUZZ data')
     parser.add_argument("-an", "--analysis_domain", type=str, help='analysis cname')
     parser.add_argument(
         "-n",
@@ -236,6 +241,9 @@ def main():
 
     args = parser.parse_args()
     params = {}
+    if args.fuzz_data:
+        params['fuzz'] = True
+        params['fd'] = args.fuzz_data
     if args.domain is None:
         log.error("Please input domain  such as python subdns.py -u baidu.com")
         sys.exit()
